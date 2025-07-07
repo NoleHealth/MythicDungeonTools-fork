@@ -120,6 +120,16 @@ function SlashCmdList.MYTHICDUNGEONTOOLS(cmd, editbox)
     end
   elseif rqst == "test" then
     MDT:OpenConfirmationFrame(450, 150, "MDT Test", "Run", "Run all tests?", MDT.test.RunAllTests)
+  elseif rqst == "hello" then
+    -- Your first contribution! A simple hello command
+    print("|cFF00FF00MDT Hello!|r Welcome to addon development!")
+    local isInInstance, instanceType = IsInInstance()
+    if isInInstance and instanceType == "party" then
+      local name, instanceType, difficulty = GetInstanceInfo()
+      print("|cFFFFFF00Current dungeon:|r", name, "|cFFFFFF00Difficulty:|r", difficulty)
+    else
+      print("|cFFFF9900You're not in a dungeon right now.|r")
+    end
   else
     MDT:Async(function() MDT:ShowInterfaceInternal() end, "showInterface")
   end
