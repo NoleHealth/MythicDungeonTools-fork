@@ -1,0 +1,16 @@
+{
+  "name": "mdt-route-decoder",
+  "version": "1.0.0",
+  "description": "Decode Mythic Dungeon Tools route strings",
+  "main": "mdt_decoder.js",
+  "scripts": {
+    "decode": "node mdt_decoder.js",
+    "test": "node test_decoder.js"
+  },
+  "dependencies": {
+    "zlib": "^1.0.5"
+  },
+  "devDependencies": {},
+  "author": "MDT Development Team",
+  "license": "MIT"
+}
