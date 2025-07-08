@@ -1,3 +1,6 @@
+https://github.com/geexmmo/python-weakauras-tool
+
+
 # Mythic Dungeon Tools - Development Guide
 
 ## Welcome to WoW Addon Development! 🎮
@@ -233,3 +236,48 @@ L["Goodbye"] = "Goodbye"
 - [WoW Addon Development](https://wowpedia.fandom.com/wiki/AddOn)
 
 Remember: Every expert was once a beginner. Start small, learn gradually, and don't be afraid to ask questions!
+
+## Understanding MDT Route Data 🔍
+
+MDT route strings are encoded using a 3-layer format:
+
+1. **Serialization**: AceSerializer format (Lua table → binary)
+2. **Compression**: LibDeflate compression (reduces size by ~60-80%)
+3. **Encoding**: Custom Base64 with alphabet `a-zA-Z0-9()`
+
+### Route String Format
+```
+!<base64_encoded_compressed_serialized_route_data>
+```
+
+The `!` prefix indicates newer deflate compression (vs legacy format).
+
+### Decoding Tools
+
+I've created several tools in the `tools/` folder to help you decode and analyze route strings:
+
+- **Python**: `python tools/mdt_decoder.py example_routes/rt1.txt`
+- **Node.js**: `node tools/mdt_decoder.js example_routes/rt1.txt`
+- **C#**: `dotnet run --project tools example_routes/rt1.txt`
+- **Lua**: `lua tools/mdt_decoder.lua example_routes/rt1.txt`
+
+These tools will convert route strings to JSON format, making it easier to understand the data structure.
+
+### Route Data Contents
+
+Routes typically contain:
+- **Dungeon info**: `dungeonIdx`, name, difficulty
+- **Affix data**: Current week's Mythic+ affixes
+- **Pull assignments**: Which enemies are in each pull
+- **Drawing objects**: Lines, circles, notes on the map
+- **Settings**: Route preferences and configurations
+
+### Example Usage
+```bash
+# Decode a route string to JSON
+cd tools
+node mdt_decoder.js ../example_routes/rt1.txt > decoded_route.json
+
+# View the structure
+cat decoded_route.json
+```
