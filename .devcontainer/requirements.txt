@@ -1,0 +1,27 @@
+# ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+# ┃ MDT Tools - Python Dependencies                                      ┃
+# ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+# Core dependencies for MDT route decoding
+# Note: base64 and zlib are built into Python standard library
+
+# CLI and utility dependencies
+click>=8.0.0
+pydantic>=2.0.0
+typing-extensions
+
+# JSON and data processing
+orjson>=3.9.0
+msgpack>=1.0.0
+
+# HTTP client for potential API integration
+httpx>=0.25.0
+aiofiles>=23.0.0
+
+# Development dependencies (optional, install with: pip install -r requirements-dev.txt)
+# black>=23.0.0
+# ruff>=0.1.0
+# mypy>=1.7.0
+# pytest>=7.4.0
+# pytest-asyncio>=0.21.0
+# pytest-cov>=4.1.0

@@ -1,0 +1,80 @@
+{
+  "name": "WiseOwl Educational Platform v2",
+  "image": "coremind-claude-code-dev",
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "postCreateCommand": "echo 'export PS1=\"%F{green}node@%m:%~%f %F{yellow}($(git rev-parse --abbrev-ref HEAD 2>/dev/null))%f ➡️  \"' >> ~/.zshrc && npm ci",
+  //"forwardPorts": [5173, 54321],
+  // "portsAttributes": {
+  //   "5173": {
+  //     "label": "Vite Dev Server",
+  //     "onAutoForward": "notify"
+  //   },
+  //   "54321": {
+  //     "label": "Supabase Local",
+  //     "onAutoForward": "silent"
+  //   }
+  // },
+  "remoteUser": "node",
+  "workspaceFolder": "/workspace",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+  "mounts": [
+    "source=/home/nole/docker_volumes/claude-config,target=/home/node/.claude,type=bind",
+    "source=coremind-claude-bashhistory,target=/commandhistory,type=volume",
+    "source=profile,target=/root,type=volume",
+    "source=/home/nole/docker_volumes/vscode-server,target=/home/node/.vscode-server,type=bind"
+    // SSH agent mount will be injected at runtime by ssh-agent-detect.sh if available
+  ],
+  "remoteEnv": {
+    "CLAUDE_CONFIG_DIR": "/home/node/.claude",
+    "NODE_OPTIONS": "--max-old-space-size=4096",
+    "POWERLEVEL9K_DISABLE_GITSTATUS": "true",
+    "NODE_ENV": "development"
+  },
+  "containerEnv": {
+    "TZ": "UTC"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "eamodio.gitlens",
+        "bradlc.vscode-tailwindcss",
+        "ms-vscode.vscode-typescript-next",
+        "formulahendry.auto-rename-tag",
+        "ms-vscode.vscode-json",
+        "GitHub.copilot",
+        "GitHub.copilot-chat",
+        "GitHub.remotehub",
+        "stuart.unique-window-colors",
+        "Gruntfuggly.todo-tree",
+        "christian-kohler.path-intellisense"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "explicit"
+        },
+        "typescript.preferences.importModuleSpecifier": "relative",
+        "tailwindCSS.experimental.classRegex": [
+          ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+          ["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
+        ],
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "terminal.integrated.profiles.linux": {
+          "bash": {
+            "path": "bash",
+            "icon": "terminal-bash"
+          },
+          "zsh": {
+            "path": "zsh"
+          }
+        }
+      }
+    }
+  }
+}
