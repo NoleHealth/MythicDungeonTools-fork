@@ -290,6 +290,7 @@ local function filterFunc(chatFrame, event, msg, player, l, cs, t, flag, channel
 end
 
 local presetCommPrefix = "MDTPreset"
+MDT.versionCheckPrefix = "MDTVersion"
 
 MDT.liveSessionPrefixes = {
   ["enabled"] = "MDTLiveEnabled",
@@ -306,30 +307,30 @@ MDT.liveSessionPrefixes = {
   ["free"] = "MDTLiveFree",
   ["bora"] = "MDTLiveBora",
   ["reqPre"] = "MDTLiveReqPre",
-  ["corrupted"] = "MDTLiveCor",
   ["difficulty"] = "MDTLiveLvl",
   ["poiAssignment"] = "MDTPOIAssignment",
-}
-
-MDT.dataCollectionPrefixes = {
-  ["request"] = "MDTDataReq",
-  ["distribute"] = "MDTDataDist",
+  ["focusMarkerAssignment"] = "MDTFocusMark",
 }
 
 ---@diagnostic disable-next-line: duplicate-set-field
 function MDTcommsObject:OnEnable()
   self:RegisterComm(presetCommPrefix)
+  self:RegisterComm(MDT.versionCheckPrefix)
   for _, prefix in pairs(MDT.liveSessionPrefixes) do
     self:RegisterComm(prefix)
   end
-  for _, prefix in pairs(MDT.dataCollectionPrefixes) do
-    self:RegisterComm(prefix)
-  end
   MDT.transmissionCache = {}
+  local ChatFrame_AddMessageEventFilter = ChatFrame_AddMessageEventFilter or ChatFrameUtil.AddMessageEventFilter
   ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY", filterFunc)
   ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY_LEADER", filterFunc)
   ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID", filterFunc)
   ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID_LEADER", filterFunc)
+end
+
+local function showMapSectionIfNeeded()
+  if MDT.IsMapSectionActive and MDT.SetCurrentSection and not MDT:IsMapSectionActive() then
+    MDT:SetCurrentSection("maps")
+  end
 end
 
 --handle preset chat link clicks
@@ -342,9 +343,13 @@ hooksecurefunc("SetItemRef", function(link, text)
     local playerName, playerRealm = UnitFullName("player")
     playerName = playerName.."-"..playerRealm
     if sender == playerName then
-      MDT:Async(function() MDT:ShowInterfaceInternal(true) end, "showInterface")
+      MDT:Async(function()
+        showMapSectionIfNeeded()
+        MDT:ShowInterfaceInternal(true)
+      end, "showInterface")
     else
       MDT:Async(function()
+        showMapSectionIfNeeded()
         MDT:ShowInterfaceInternal(true)
         MDT:LiveSession_Enable()
       end, "showInterfaceLive")
@@ -364,12 +369,16 @@ hooksecurefunc("SetItemRef", function(link, text)
     -- to get the displayName (name of the preset) we need to get everything between the starting and closing brackets
     local displayName = text:match("%[(.-)%]")
     sender = name.."-"..realm
-    local preset = MDT.transmissionCache[sender][displayName]
+    local preset = MDT.transmissionCache[sender] and MDT.transmissionCache[sender][displayName]
     if preset and type(preset) == "table" then
       MDT:Async(function()
+        showMapSectionIfNeeded()
         MDT:ShowInterfaceInternal(true)
         MDT:ImportPreset(CopyTable(preset))
       end, "showInterfaceChatImport")
+    elseif preset == 0 then --special marker for old dungeon preset
+      local msg = L["WARNING_OLD_DUNGEON_IMPORT"]
+      print("|cFFFF0000MDT:|r "..msg)
     else
       local msg = "\nparsed displayName: "..displayName
       msg = msg.."\nsender: "..sender
@@ -397,13 +406,30 @@ function MDTcommsObject:OnCommReceived(prefix, message, distribution, sender)
   end
   local fullName = name.."-"..realm
 
+  if prefix == MDT.versionCheckPrefix then
+    if MDT.VersionCheck_OnCommReceived then
+      MDT:VersionCheck_OnCommReceived(message, distribution, fullName)
+    end
+    return
+  end
+
   --standard preset transmission
   --we cache the preset here already
   --the user still decides if he wants to click the chat link and add the preset to his db
   if prefix == presetCommPrefix then
     local preset = MDT:StringToTable(message, false)
-    local dungeon = MDT:GetDungeonName(preset.value.currentDungeonIdx, true)
     local presetName = preset.text
+    local dungeon = MDT:GetDungeonName(preset.value.currentDungeonIdx, true)
+    if not dungeon then
+      -- check if it's dungeon that has been in MDT before but is not in the current version
+      local knownDungeon = MDT.knownDungeons[preset.value.currentDungeonIdx]
+      if knownDungeon then
+        local displayName = knownDungeon..": "..presetName
+        MDT.transmissionCache[fullName] = MDT.transmissionCache[fullName] or {}
+        MDT.transmissionCache[fullName][displayName] = 0 --special marker for old dungeon preset
+      end
+      return
+    end
     local displayName = dungeon..": "..presetName
     MDT.transmissionCache[fullName] = MDT.transmissionCache[fullName] or {}
     MDT.transmissionCache[fullName][displayName] = preset
@@ -420,17 +446,6 @@ function MDTcommsObject:OnCommReceived(prefix, message, distribution, sender)
         MDT.liveSessionRequested = false
       end
     end
-  end
-
-  if prefix == MDT.dataCollectionPrefixes.request then
-    MDT.DataCollection:DistributeData()
-  end
-
-  if prefix == MDT.dataCollectionPrefixes.distribute then
-    if sender == UnitFullName("player") then return end
-    local package = MDT:StringToTable(message, false)
-    print("Received data package from "..fullName)
-    MDT.DataCollection:MergeReceiveData(package)
   end
 
   if prefix == MDT.liveSessionPrefixes.enabled then
@@ -452,21 +467,7 @@ function MDTcommsObject:OnCommReceived(prefix, message, distribution, sender)
       if preset == MDT:GetCurrentPreset() then
         MDT:ReloadPullButtons()
         MDT:SetSelectionToPull(MDT:GetCurrentPull())
-        MDT:POI_UpdateAll() --for corrupted spires
         MDT:UpdateProgressbar()
-      end
-    end
-  end
-
-  --corrupted
-  if prefix == MDT.liveSessionPrefixes.corrupted then
-    if MDT.liveSessionActive then
-      local preset = MDT:GetCurrentLivePreset()
-      local offsets = MDT:StringToTable(message, false)
-      --only reposition if no blip is currently moving
-      if not MDT.draggedBlip then
-        preset.value.riftOffsets = offsets
-        MDT:UpdateMap()
       end
     end
   end
@@ -477,20 +478,11 @@ function MDTcommsObject:OnCommReceived(prefix, message, distribution, sender)
       local db = MDT:GetDB()
       local difficulty = tonumber(message)
       if difficulty and difficulty ~= db.currentDifficulty then
-        local updateSeasonal
-        if ((difficulty >= 10 and db.currentDifficulty < 10) or (difficulty < 10 and db.currentDifficulty >= 10)) then
-          updateSeasonal = true
-        end
         db.currentDifficulty = difficulty
         MDT.main_frame.sidePanel.DifficultySlider:SetValue(difficulty)
         MDT:UpdateProgressbar()
         if MDT.EnemyInfoFrame and MDT.EnemyInfoFrame.frame:IsShown() then MDT:UpdateEnemyInfoData() end
         MDT:ReloadPullButtons()
-        if updateSeasonal then
-          MDT:POI_UpdateAll()
-          MDT:KillAllAnimatedLines()
-          MDT:DrawAllAnimatedLines()
-        end
       end
     end
   end
@@ -502,26 +494,12 @@ function MDTcommsObject:OnCommReceived(prefix, message, distribution, sender)
       local week = tonumber(message)
       if preset.week ~= week then
         preset.week = week
-        local teeming = MDT:IsPresetTeeming(preset)
-        preset.value.teeming = teeming
         if preset == MDT:GetCurrentPreset() then
           local affixDropdown = MDT.main_frame.sidePanel.affixDropdown
           affixDropdown:SetValue(week)
-          if not MDT:GetCurrentAffixWeek() then
-            MDT.main_frame.sidePanel.affixWeekWarning.image:Hide()
-            MDT.main_frame.sidePanel.affixWeekWarning:SetDisabled(true)
-          elseif MDT:GetCurrentAffixWeek() == week then
-            MDT.main_frame.sidePanel.affixWeekWarning.image:Hide()
-            MDT.main_frame.sidePanel.affixWeekWarning:SetDisabled(true)
-          else
-            MDT.main_frame.sidePanel.affixWeekWarning.image:Show()
-            MDT.main_frame.sidePanel.affixWeekWarning:SetDisabled(false)
-          end
           MDT:POI_UpdateAll()
           MDT:UpdateProgressbar()
           MDT:ReloadPullButtons()
-          MDT:KillAllAnimatedLines()
-          MDT:DrawAllAnimatedLines()
         end
       end
     end
@@ -542,6 +520,12 @@ function MDTcommsObject:OnCommReceived(prefix, message, distribution, sender)
           if poiFrame then UIFrameFlash(poiFrame, 0.5, 1, 1, true, 1, 0); end
         end
       end
+    end
+  end
+
+  if prefix == MDT.liveSessionPrefixes.focusMarkerAssignment then
+    if MDT.FocusMarker_OnCommReceived then
+      MDT:FocusMarker_OnCommReceived(message, fullName)
     end
   end
 
@@ -749,7 +733,7 @@ local function displaySendingProgress(userArgs, bytesSent, bytesToSend)
       name = UnitFullName(name)
 
       local fullName = name.."+"..realm
-      SendChatMessage(prefix..fullName.." - "..dungeon..": "..presetName.."]", distribution)
+      C_ChatInfo.SendChatMessage(prefix..fullName.." - "..dungeon..": "..presetName.."]", distribution)
     end
     numActiveTransmissions = numActiveTransmissions - 1
   end
@@ -805,6 +789,7 @@ function MDT:SendToGroup(distribution, silent, preset)
   preset = preset or MDT:GetCurrentPreset()
   --set unique id
   MDT:SetUniqueID(preset)
+  MDT:EnsurePresetCreatedBy(preset)
   --gotta encode difficulty into preset
   local db = MDT:GetDB()
   preset.difficulty = db.currentDifficulty

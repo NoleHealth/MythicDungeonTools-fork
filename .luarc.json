@@ -62,9 +62,24 @@
     "GAME_LOCALE",
     "DevTool",
     "MenuUtil",
-        "GameTooltip_SetTitle",
-        "WrapTextInColor",
-        "ICON_LIST"
+    "GameTooltip_SetTitle",
+    "WrapTextInColor",
+    "ICON_LIST",
+    "MouseIsOver",
+    "DrawLine",
+    "errorhandler",
+    "ChatFrame_AddMessageEventFilter",
+    "UIFrameFlash",
+    "MDTMapPanelFrame",
+    "MDTScrollFrame",
+    "CreateTexturePool",
+    "CloseDropDownMenus",
+    "GetAddOnMetadata",
+    "LOCALIZED_CLASS_NAMES_MALE",
+        "C_Secrets",
+        "ChatFrameUtil",
+        "MAX_ACCOUNT_MACROS",
+        "TooltipDataProcessor"
   ],
-  "diagnostics.disable": []
+  "diagnostics.disable": ["invisible"]
 }

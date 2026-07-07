@@ -95,6 +95,10 @@ local schemas = {
             type = "number"
           },
           {
+            name = "sizeMult",
+            type = "number"
+          },
+          {
             name = "textAnchor",
             type = "string"
           },
@@ -137,13 +141,6 @@ local schemas = {
             }
           },
           {
-            name = "weeks",
-            type = "array",
-            fields = {
-              type = "boolean"
-            }
-          },
-          {
             name = "value1",
             type = "number"
           },
@@ -154,6 +151,52 @@ local schemas = {
           {
             name = "value3",
             type = "number"
+          },
+          {
+            name = "info",
+            type = "schemaArray",
+            fields = {
+              {
+                name = "name",
+                type = "string",
+              },
+              {
+                name = "description",
+                type = "string",
+              },
+              {
+                name = "texture",
+                type = "number",
+              },
+              {
+                name = "atlas",
+                type = "string",
+              },
+              {
+                name = "spellId",
+                type = "number",
+              },
+              {
+                name = "size",
+                type = "number",
+              },
+              {
+                name = "fontSize",
+                type = "number",
+              },
+              {
+                name = "textOffsetX",
+                type = "number",
+              },
+              {
+                name = "textOffsetY",
+                type = "number",
+              },
+              {
+                name = "desaturateIfUnassigned",
+                type = "boolean",
+              },
+            },
           },
         }
       }
@@ -175,10 +218,6 @@ local schemas = {
         },
         {
           name = "count",
-          type = "number"
-        },
-        {
-          name = "teemingCount",
           type = "number"
         },
         {
@@ -232,43 +271,6 @@ local schemas = {
         {
           name = "instanceID",
           type = "number"
-        },
-        {
-          name = "reaping",
-          type = "number"
-        },
-        {
-          name = "corrupted",
-          type = "boolean"
-        },
-        {
-          name = "bonusSpell",
-          type = "number"
-        },
-        {
-          name = "badCreatureModel",
-          type = "boolean"
-        },
-        {
-          name = "modelPosition",
-          type = "array",
-          fields = {
-            type = "number"
-          }
-        },
-        {
-          name = "include",
-          type = "schemaArray",
-          fields = {
-            {
-              name = "level",
-              type = "number",
-            },
-            {
-              name = "affix",
-              type = "number",
-            },
-          },
         },
         {
           name = "powers",
@@ -457,48 +459,8 @@ local schemas = {
                 type = "number"
               },
               {
-                name = "inspiring",
-                type = "boolean"
-              },
-              {
-                name = "shrouded",
-                type = "boolean"
-              },
-              {
-                name = "disguised",
-                type = "boolean"
-              },
-              {
                 name = "note",
                 type = "string"
-              },
-              {
-                name = "upstairs",
-                type = "boolean"
-              },
-              {
-                name = "faction",
-                type = "number"
-              },
-              {
-                name = "blacktoothEvent",
-                type = "boolean"
-              },
-              {
-                name = "teeming",
-                type = "boolean"
-              },
-              {
-                name = "negativeTeeming",
-                type = "boolean"
-              },
-              {
-                name = "patrolFacing",
-                type = "number"
-              },
-              {
-                name = "patrolFacing2",
-                type = "number"
               },
               {
                 name = "patrol",
@@ -515,20 +477,6 @@ local schemas = {
                       type = "number"
                     },
                   },
-                },
-              },
-              {
-                name = "week",
-                type = "array",
-                fields = {
-                  type = "boolean",
-                },
-              },
-              {
-                name = "infested",
-                type = "array",
-                fields = {
-                  type = "boolean",
                 },
               },
               {
