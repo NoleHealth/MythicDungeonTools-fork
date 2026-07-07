@@ -1,0 +1,274 @@
+{
+  "name": "MDT Multi-Language Development Environment",
+
+  // ───────────────────────────────────────
+  // Container Configuration
+  // ───────────────────────────────────────
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "."
+  },
+
+  // ───────────────────────────────────────
+  // Additional features from Dev Container Features
+  // ───────────────────────────────────────
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {
+      "ppa": true,
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {
+      "installDirectlyFromGitHubRelease": true,
+      "version": "latest"
+    }
+  },
+
+  // ───────────────────────────────────────
+  // Post-creation setup commands
+  // ───────────────────────────────────────
+  "postCreateCommand": [
+    "bash", "-c",
+    "echo '🎮 Setting up MDT Development Environment...' && echo 'Verifying installed tools:' && echo 'Node.js:' && node --version && echo 'Python:' && python3 --version && echo 'uv:' && uv --version && echo '.NET:' && dotnet --version && echo 'Lua:' && lua -v && echo 'Git:' && git --version && echo '✅ All tools installed successfully!' && echo 'Run ./setup.sh to test MDT decoders'"
+  ],
+
+  // ───────────────────────────────────────
+  // Network and Port Configuration
+  // ───────────────────────────────────────
+  "forwardPorts": [3000, 5000, 5173, 8080],
+  "portsAttributes": {
+    "3000": {
+      "label": "Node.js Dev Server",
+      "onAutoForward": "notify"
+    },
+    "5000": {
+      "label": ".NET Dev Server",
+      "onAutoForward": "notify"
+    },
+    "5173": {
+      "label": "Vite Dev Server",
+      "onAutoForward": "notify"
+    },
+    "8080": {
+      "label": "HTTP Server",
+      "onAutoForward": "silent"
+    }
+  },
+
+  // ───────────────────────────────────────
+  // User and Workspace Configuration
+  // ───────────────────────────────────────
+  "remoteUser": "node",
+  "workspaceFolder": "/workspace",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+
+  // ───────────────────────────────────────
+  // Volume Mounts for Persistence
+  // ───────────────────────────────────────
+  "mounts": [
+    "source=mdt-node-modules,target=/workspace/node_modules,type=volume",
+    "source=mdt-vscode-server,target=/home/node/.vscode-server,type=volume",
+    "source=mdt-cache,target=/home/node/.cache,type=volume",
+    "source=mdt-commandhistory,target=/commandhistory,type=volume"
+  ],
+
+  // ───────────────────────────────────────
+  // Environment Variables
+  // ───────────────────────────────────────
+  "remoteEnv": {
+    "NODE_OPTIONS": "--max-old-space-size=4096",
+    "NODE_ENV": "development",
+    "DOTNET_ROOT": "/usr/share/dotnet",
+    "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+    "PYTHONPATH": "/workspace",
+    "UV_CACHE_DIR": "/home/node/.cache/uv",
+    "LUA_PATH": "/usr/local/share/lua/5.1/?.lua;/usr/local/share/lua/5.1/?/init.lua;;",
+    "LUA_CPATH": "/usr/local/lib/lua/5.1/?.so;;",
+    "PATH": "/home/node/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+  },
+
+  "containerEnv": {
+    "TZ": "UTC",
+    "DEBIAN_FRONTEND": "noninteractive"
+  },
+
+  // ───────────────────────────────────────
+  // VS Code Customizations
+  // ───────────────────────────────────────
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        // ─── Core Development ───
+        "ms-vscode.vscode-json",
+        "eamodio.gitlens",
+        "GitHub.copilot",
+        "GitHub.copilot-chat",
+        "GitHub.remotehub",
+        "Gruntfuggly.todo-tree",
+        "christian-kohler.path-intellisense",
+        "formulahendry.code-runner",
+
+        // ─── JavaScript/TypeScript ───
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "ms-vscode.vscode-typescript-next",
+        "formulahendry.auto-rename-tag",
+
+        // ─── Python Development ───
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "charliermarsh.ruff",
+        "ms-python.autopep8",
+
+        // ─── C# .NET Development ───
+        "ms-dotnettools.csharp",
+        "ms-dotnettools.vscode-dotnet-runtime",
+        "ms-dotnettools.vscodeintellicode-csharp",
+
+        // ─── Lua Development ───
+        "sumneko.lua",
+        "actboy168.lua-debug",
+        "keyring.Lua",
+
+        // ─── WoW/Gaming Development ───
+        "stanzilla.vscode-wow-api",
+
+        // ─── Utility Extensions ───
+        "stuart.unique-window-colors",
+        "ms-vscode.hexeditor",
+        "redhat.vscode-xml",
+        "DotJoshJohnson.xml"
+      ],
+
+      "settings": {
+        // ─── Editor Settings ───
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "explicit",
+          "source.organizeImports": "explicit"
+        },
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true,
+        "editor.detectIndentation": true,
+        "editor.renderWhitespace": "boundary",
+        "editor.minimap.enabled": true,
+
+        // ─── Terminal Settings ───
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "terminal.integrated.profiles.linux": {
+          "bash": {
+            "path": "bash",
+            "icon": "terminal-bash"
+          },
+          "zsh": {
+            "path": "zsh",
+            "icon": "terminal"
+          }
+        },
+        "terminal.integrated.fontFamily": "monospace",
+
+        // ─── JavaScript/TypeScript Settings ───
+        "typescript.preferences.importModuleSpecifier": "relative",
+        "javascript.format.enable": true,
+        "typescript.format.enable": true,
+        "eslint.format.enable": true,
+
+        // ─── Python Settings ───
+        "python.defaultInterpreterPath": "/usr/bin/python3",
+        "python.linting.enabled": true,
+        "python.linting.pylintEnabled": false,
+        "python.linting.ruffEnabled": true,
+        "python.formatting.provider": "black",
+        "python.analysis.typeCheckingMode": "basic",
+
+        // ─── C# .NET Settings ───
+        "dotnet.defaultSolution": "/workspace/tools/MDTDecoder.csproj",
+        "omnisharp.enableEditorConfigSupport": true,
+        "csharp.format.enable": true,
+
+        // ─── Lua Settings ───
+        "Lua.diagnostics.globals": [
+          // WoW API Globals
+          "C_AddOns", "CreateFrame", "UIParent", "LibStub", "AceAddon",
+          "print", "pairs", "ipairs", "next", "type", "tostring", "tonumber",
+          "GetTime", "IsInInstance", "GetInstanceInfo", "GetMapInfo",
+          "UnitName", "UnitClass", "UnitLevel", "UnitGUID",
+          // MDT Specific
+          "MDT", "MDTFrame", "MethodDungeonTools",
+          // Lua Standard
+          "arg", "_G", "_VERSION", "assert", "collectgarbage", "dofile",
+          "error", "getfenv", "getmetatable", "loadfile", "loadstring",
+          "module", "rawequal", "rawget", "rawset", "require", "select",
+          "setfenv", "setmetatable", "unpack", "xpcall"
+        ],
+        "Lua.runtime.version": "Lua 5.1",
+        "Lua.workspace.checkThirdParty": false,
+        "Lua.workspace.library": [
+          "/workspace"
+        ],
+
+        // ─── File Associations ───
+        "files.associations": {
+          "*.toc": "plaintext",
+          "*.xml": "xml",
+          "*.lua": "lua",
+          "*.md": "markdown",
+          "*.json": "jsonc",
+          "Dockerfile": "dockerfile"
+        },
+
+        // ─── Code Runner Settings ───
+        "code-runner.executorMap": {
+          "javascript": "node",
+          "typescript": "ts-node",
+          "python": "python3",
+          "csharp": "cd $dir && dotnet run",
+          "lua": "lua"
+        },
+        "code-runner.runInTerminal": true,
+        "code-runner.saveFileBeforeRun": true,
+
+        // ─── Search and File Settings ───
+        "search.exclude": {
+          "**/node_modules": true,
+          "**/bin": true,
+          "**/obj": true,
+          "**/.git": true,
+          "**/Textures": true
+        },
+        "files.exclude": {
+          "**/node_modules": true,
+          "**/bin": true,
+          "**/obj": true
+        },
+
+        // ─── Git Settings ───
+        "git.enableSmartCommit": true,
+        "git.confirmSync": false,
+        "git.autofetch": true,
+
+        // ─── IntelliSense and Completion ───
+        "editor.suggestSelection": "first",
+        "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+
+        // ─── Workspace Trust ───
+        "security.workspace.trust.untrustedFiles": "open"
+      }
+    }
+  },
+
+  // ───────────────────────────────────────
+  // Development Container Lifecycle
+  // ───────────────────────────────────────
+  "shutdownAction": "stopContainer",
+  "overrideCommand": false,
+  "updateContentCommand": "echo 'Container updated!'",
+
+  // ───────────────────────────────────────
+  // Security and Capabilities
+  // ───────────────────────────────────────
+  "init": true,
+  "privileged": false,
+  "capAdd": [],
+  "securityOpt": []
+}

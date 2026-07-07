@@ -1,8 +1,171 @@
-.idea/
-.vscode/
+# ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+# ┃ MDT Tools - Git Ignore Configuration                                 ┃
+# ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+# ───────────────────────────────────────
+# WoW Addon specific (original)
+# ───────────────────────────────────────
 AGENTS.local.md
 libs/*
 !libs/LibDeflate
 !libs/load_libs.xml
 
 Locales/zhCN.lua
+
+# ───────────────────────────────────────
+# Node.js
+# ───────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.pnpm-debug.log*
+package-lock.json
+
+# ───────────────────────────────────────
+# Python
+# ───────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.uv/
+
+# ───────────────────────────────────────
+# .NET
+# ───────────────────────────────────────
+bin/
+obj/
+*.user
+*.suo
+*.cache
+*.docstates
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Bb]in/
+[Oo]bj/
+.vs/
+packages/
+*.nupkg
+*.snupkg
+
+# ───────────────────────────────────────
+# Lua
+# ───────────────────────────────────────
+luac.out
+*.rockspec
+
+# ───────────────────────────────────────
+# IDE and Editor files
+# ───────────────────────────────────────
+.idea/
+.vscode/settings.json
+.vscode/launch.json
+.vscode/extensions.json
+*.swp
+*.swo
+*~
+
+# ───────────────────────────────────────
+# OS generated files
+# ───────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ───────────────────────────────────────
+# Logs and temporary files
+# ───────────────────────────────────────
+logs/
+*.log
+pids/
+*.pid
+*.seed
+*.pid.lock
+.grunt/
+lib-cov/
+coverage/
+.nyc_output/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# ───────────────────────────────────────
+# Runtime and cache directories
+# ───────────────────────────────────────
+.cache/
+.parcel-cache/
+.next/
+out/
+.nuxt/
+dist/
+.tmp/
+.sass-cache/
+
+# ───────────────────────────────────────
+# Environment and configuration files
+# ───────────────────────────────────────
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.envrc
+
+# ───────────────────────────────────────
+# Project specific
+# ───────────────────────────────────────
+# Keep example routes for testing
+!example_routes/
+example_routes/*.txt.backup
+
+# Compiled binaries
+*.exe
+*.dll
+*.pdb
+
+# Test results
+TestResults/
+test-results/
+*.trx
+*.coverage
+
+# Backup files
+*.bak
+*.backup
+*.orig
+
+tools/obj

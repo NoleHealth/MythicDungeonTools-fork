@@ -1,0 +1,97 @@
+{
+  "name": "mdt-tools",
+  "version": "1.0.0",
+  "description": "Mythic Dungeon Tools - Route Decoders and Development Utilities",
+  "main": "tools/mdt_decoder.js",
+  "type": "module",
+  "scripts": {
+    "start": "node tools/mdt_decoder.js",
+    "dev": "nodemon tools/mdt_decoder.js",
+    "build": "echo 'Building project...' && npm run lint && npm run test",
+    "test": "node tools/test_decoder.js",
+    "test:watch": "nodemon tools/test_decoder.js",
+    "lint": "eslint tools/*.js --fix",
+    "format": "prettier --write tools/*.js",
+    "decode:js": "node tools/mdt_decoder.js",
+    "decode:py": "python3 tools/mdt_decoder.py",
+    "decode:cs": "cd tools && dotnet run",
+    "decode:lua": "lua tools/mdt_decoder.lua",
+    "setup": "./setup.sh",
+    "clean": "rm -rf node_modules package-lock.json && npm install"
+  },
+  "keywords": [
+    "world-of-warcraft",
+    "wow",
+    "mythic-plus",
+    "dungeons",
+    "route-decoder",
+    "gaming",
+    "addon"
+  ],
+  "author": "MDT Development Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Nnoggie/MythicDungeonTools.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Nnoggie/MythicDungeonTools/issues"
+  },
+  "homepage": "https://github.com/Nnoggie/MythicDungeonTools#readme",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "dependencies": {
+    "pako": "^2.1.0",
+    "buffer": "^6.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "eslint": "^8.55.0",
+    "prettier": "^3.1.0",
+    "nodemon": "^3.0.2",
+    "typescript": "^5.3.3",
+    "ts-node": "^10.9.1"
+  },
+  "eslintConfig": {
+    "env": {
+      "node": true,
+      "es2022": true
+    },
+    "extends": [
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "ecmaVersion": "latest",
+      "sourceType": "module"
+    },
+    "rules": {
+      "no-console": "off",
+      "no-unused-vars": [
+        "error",
+        {
+          "argsIgnorePattern": "^_"
+        }
+      ]
+    }
+  },
+  "prettier": {
+    "semi": true,
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "es5",
+    "printWidth": 80
+  },
+  "nodemonConfig": {
+    "watch": [
+      "tools/"
+    ],
+    "ext": "js,json",
+    "ignore": [
+      "node_modules/",
+      "*.test.js"
+    ],
+    "exec": "node"
+  }
+}
